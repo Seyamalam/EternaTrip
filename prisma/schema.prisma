@@ -1,0 +1,221 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id            String         @id @default(cuid())
+  name          String?
+  email         String?        @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String         @default("user")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+  preferences   UserPreferences?
+  wishlist      WishlistItem[]
+  reviews       Review[]
+  hotelBookings HotelBooking[]
+}
+
+model UserPreferences {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredDestinations String[]
+  dietaryRestrictions  String[]
+  accommodationType    String[]
+  budgetRange         String
+  travelStyle         String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tourId    String?
+  tour      Tour?    @relation(fields: [tourId], references: [id])
+  hotelId   String?
+  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, tourId, hotelId])
+}
+
+model Tour {
+  id          String        @id @default(cuid())
+  title       String
+  description String        @db.Text
+  location    String
+  price       Float
+  duration    Int
+  maxPeople   Int
+  featured    Boolean       @default(false)
+  images      Image[]
+  bookings    Booking[]
+  wishlist    WishlistItem[]
+  reviews     Review[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Booking {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tourId          String?
+  tour            Tour?        @relation(fields: [tourId], references: [id])
+  hotelId         String?
+  hotel           Hotel?       @relation(fields: [hotelId], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  status          String       @default("pending") // pending, confirmed, cancelled
+  totalAmount     Float
+  paidAmount      Float        @default(0)
+  numberOfGuests  Int          @default(1)
+  groupBooking    Boolean      @default(false)
+  groupSize       Int?
+  paymentPlan     PaymentPlan?
+  specialRequests String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  rating    Float
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Float
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tour      Tour     @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  tourId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+}
+
+model Hotel {
+  id          String         @id @default(cuid())
+  name        String
+  description String         @db.Text
+  location    String
+  price       Float
+  rating      Float          @default(0)
+  amenities   String[]
+  images      HotelImage[]
+  bookings    HotelBooking[]
+  wishlist    WishlistItem[]
+  featured    Boolean        @default(false)
+  hotelBookings Booking[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model HotelImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HotelBooking {
+  id         String   @id @default(cuid())
+  hotel      Hotel    @relation(fields: [hotelId], references: [id])
+  hotelId    String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  checkIn    DateTime
+  checkOut   DateTime
+  guests     Int
+  totalPrice Float
+  status     Status   @default(PENDING)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model PaymentPlan {
+  id              String   @id @default(cuid())
+  bookingId       String   @unique
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  totalAmount     Float
+  installments    Int
+  paidInstallments Int     @default(0)
+  nextDueDate     DateTime
+  status          String   @default("active") // active, completed, defaulted
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  CANCELLED
+} 

@@ -2,26 +2,185 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Yuji+Mai&display=swap');
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    
+    --radius: 0.5rem;
+    
+    /* Gradient Colors */
+    --gradient-primary-start: #2563eb;
+    --gradient-primary-end: #3b82f6;
+    --gradient-secondary-start: #4f46e5;
+    --gradient-secondary-end: #6366f1;
+    --gradient-accent-start: #8b5cf6;
+    --gradient-accent-end: #6366f1;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    
+    /* Dark Mode Gradient Colors */
+    --gradient-primary-start: #1d4ed8;
+    --gradient-primary-end: #2563eb;
+    --gradient-secondary-start: #4338ca;
+    --gradient-secondary-end: #4f46e5;
+    --gradient-accent-start: #7c3aed;
+    --gradient-accent-end: #6d28d9;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans;
+  }
+  
+  .hero-title {
+    @apply text-4xl md:text-6xl font-bold text-secondary;
+  }
+  
+  .hero-subtitle {
+    @apply text-lg md:text-xl font-serif text-primary;
+  }
+  
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-secondary mb-4;
+  }
+  
+  .section-subtitle {
+    @apply text-lg font-serif text-primary mb-8;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .hero-title {
+    @apply text-4xl font-extrabold tracking-tight lg:text-5xl;
+    background: linear-gradient(to right, var(--gradient-primary-start), var(--gradient-primary-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold tracking-tight sm:text-4xl;
+    background: linear-gradient(to right, var(--gradient-secondary-start), var(--gradient-secondary-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-subtitle {
+    @apply mt-4 text-lg text-muted-foreground;
+  }
+
+  .gradient-border {
+    position: relative;
+    border-radius: var(--radius);
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(var(--radius) + 2px);
+    background: linear-gradient(135deg, var(--gradient-accent-start), var(--gradient-accent-end));
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .glass-effect {
+    @apply bg-white bg-opacity-10 backdrop-blur-lg;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-accent-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm hover-lift;
+  }
+
+  .button-gradient {
+    @apply relative inline-flex items-center justify-center px-6 py-2 overflow-hidden font-medium transition-all bg-gradient-primary rounded-md hover:bg-gradient-secondary;
+  }
+
+  .nav-link {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2;
+  }
+
+  .input-gradient {
+    @apply gradient-border bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
   }
 }
