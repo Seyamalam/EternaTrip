@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Input } from '@/components/ui/input';
@@ -35,7 +35,7 @@ interface Hotel {
   images: { url: string }[];
 }
 
-export default function HotelsPage() {
+function HotelsContent() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -241,5 +241,13 @@ export default function HotelsPage() {
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+export default function HotelsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HotelsContent />
+    </Suspense>
   );
 } 

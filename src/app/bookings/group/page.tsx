@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GroupBookingForm } from "@/components/booking/group-booking-form";
 import { toast } from "sonner";
 
-export default function GroupBookingPage() {
+function GroupBookingsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,5 +69,13 @@ export default function GroupBookingPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function GroupBookingsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GroupBookingsContent />
+    </Suspense>
   );
 } 

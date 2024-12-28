@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ interface Tour {
   images: { url: string }[];
 }
 
-export default function ToursPage() {
+function ToursContent() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -231,5 +231,13 @@ export default function ToursPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ToursPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ToursContent />
+    </Suspense>
   );
 } 

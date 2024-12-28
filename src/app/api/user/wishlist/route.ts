@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 
 export async function GET() {
   try {
@@ -19,10 +19,15 @@ export async function GET() {
         tour: {
           select: {
             id: true,
-            name: true,
-            destination: true,
+            title: true,
+            location: true,
             price: true,
-            image: true,
+            images: {
+              select: {
+                url: true,
+              },
+              take: 1,
+            },
           },
         },
         hotel: {
@@ -30,8 +35,13 @@ export async function GET() {
             id: true,
             name: true,
             location: true,
-            pricePerNight: true,
-            image: true,
+            price: true,
+            images: {
+              select: {
+                url: true,
+              },
+              take: 1,
+            },
           },
         },
       },
@@ -85,10 +95,15 @@ export async function POST(req: Request) {
         tour: {
           select: {
             id: true,
-            name: true,
-            destination: true,
+            title: true,
+            location: true,
             price: true,
-            image: true,
+            images: {
+              select: {
+                url: true,
+              },
+              take: 1,
+            },
           },
         },
         hotel: {
@@ -96,8 +111,13 @@ export async function POST(req: Request) {
             id: true,
             name: true,
             location: true,
-            pricePerNight: true,
-            image: true,
+            price: true,
+            images: {
+              select: {
+                url: true,
+              },
+              take: 1,
+            },
           },
         },
       },

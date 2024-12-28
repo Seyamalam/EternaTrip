@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
@@ -54,8 +54,9 @@ export async function POST(req: Request) {
           connect: { email: session.user.email },
         },
         startDate: new Date(startDate),
-        numberOfPeople,
-        totalPrice,
+        endDate: new Date(startDate), // Since it's a tour, we'll use the same date for now
+        numberOfGuests: numberOfPeople,
+        totalAmount: totalPrice,
         status: 'PENDING',
       },
     });
